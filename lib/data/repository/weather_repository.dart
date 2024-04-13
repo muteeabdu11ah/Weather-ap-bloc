@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dartz/dartz.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:weather_app_bloc/data/data_provider/weather_data_provider.dart';
 import 'package:weather_app_bloc/models/weather_model.dart';
@@ -10,7 +11,7 @@ class WeatherRepository {
   final WeatherDataprovider weatherDataprovider;
 
   WeatherRepository(this.weatherDataprovider);
-  Future<WeatherModel> getCurrentWeather(double lat, double lon) async {
+  Future<Either<int, WeatherModel>> getCurrentWeather(double lat, double lon) async {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.medium);
@@ -21,12 +22,11 @@ class WeatherRepository {
       print(daata);
 
       if (daata['cod'] != 200) {
-        throw 'an unexpected error happened';
+        return left(0);
       }
 
-      return daata;
+      return right(daata);
     } catch (e) {
-      throw e.toString();
-    }
+return left(0);    }
   }
 }

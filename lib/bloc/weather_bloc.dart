@@ -19,10 +19,16 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     try {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.medium);
-print(position);
-      final weather = await weatherRepository.getCurrentWeather(position.latitude,position.longitude);
-print(weather);
-      emit(WeatherSucess(weatherModel: weather));
+      print(position);
+      final weather = await weatherRepository.getCurrentWeather(
+          position.latitude, position.longitude);
+      print(weather);
+
+      weather.fold((l) {
+        emit(WeatherFailure(message: 'an error accoured'));
+      }, (r) {
+        emit(WeatherSucess(weatherModel: r));
+      });
     } on Exception catch (e) {
       emit(WeatherFailure(message: e.toString()));
     }
